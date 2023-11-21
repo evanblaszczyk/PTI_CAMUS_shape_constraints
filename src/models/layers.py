@@ -345,7 +345,7 @@ class UpsampleBlock(nn.Module):
         self.transp_conv = get_transp_conv(
             in_channels, out_channels, stride, stride, kwargs["dim"], bias=bias
         )
-        self.conv_block = ConvBlock(2 * out_channels, out_channels, kernel_size, 1, **kwargs)
+        self.conv_block = ConvBlock(out_channels, out_channels, kernel_size, 1, **kwargs)
         self.attention = kwargs["attention"]
         if self.attention:
             att_out, norm, dim = out_channels // 2, kwargs["norm"], kwargs["dim"]
@@ -357,13 +357,13 @@ class UpsampleBlock(nn.Module):
 
     def forward(self, input_data: Tensor, skip_data: Tensor):  # noqa: D102
         out = self.transp_conv(input_data)
-        if self.attention:
-            out_a = self.conv_o(out)
-            skip_a = self.conv_s(skip_data)
-            psi_a = self.psi(self.relu(out_a + skip_a))
-            attention = self.sigmoid(psi_a)
-            skip_data = skip_data * attention
-        out = torch.cat((out, skip_data), dim=1)
+        #if self.attention:
+        #    out_a = self.conv_o(out)
+        #    skip_a = self.conv_s(skip_data)
+        #    psi_a = self.psi(self.relu(out_a + skip_a))
+        #    attention = self.sigmoid(psi_a)
+        #    skip_data = skip_data * attention
+        #out = torch.cat((out, skip_data), dim=1)
         out = self.conv_block(out)
         return out
 

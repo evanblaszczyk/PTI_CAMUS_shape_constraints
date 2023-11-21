@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from torch import Tensor
 
 
-class UNet(nn.Module):
+class Auto_Encoder(nn.Module):
     """Architecture based on U-Net: Convolutional Networks for Biomedical Image Segmentation.
 
     Retrieved from:
@@ -152,7 +152,7 @@ class _Up(nn.Module):
         else:
             self.upsample = nn.ConvTranspose2d(in_ch, in_ch // 2, kernel_size=2, stride=2)
 
-        self.conv = _DoubleConv(in_ch, out_ch, dropout_prob, use_batchnorm)
+        self.conv = _DoubleConv(in_ch // 2, out_ch, dropout_prob, use_batchnorm)
 
     def forward(self, x: Tensor, connected_encoder_features: Tensor) -> Tensor:
         x = self.upsample(x)
@@ -164,7 +164,7 @@ class _Up(nn.Module):
         x = F.pad(x, [diff_w // 2, diff_w - diff_w // 2, diff_h // 2, diff_h - diff_h // 2])
 
         # Concatenate along the channels axis
-        x = torch.cat([connected_encoder_features, x], dim=1)
+        #x = torch.cat([connected_encoder_features, x], dim=1)
 
         return self.conv(x)
 
